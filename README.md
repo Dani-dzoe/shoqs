@@ -1,212 +1,394 @@
-# Smart Hospital Queue Optimization System
+# 🏥 St. Jude Smart Hospital Queue Optimization System
 
-A production-ready hospital queue optimization platform featuring dynamic triage priority calculation, real-time wait-time estimation, role-based workflows (Patient Kiosk, Patient Dashboard, Doctor Consultation Station, Public TV Lobby Display), and dual backend implementations (**Node.js/Express TypeScript** and **C# ASP.NET Core 8**).
+[![React 19](https://img.shields.io/badge/React-19.0-61dafb?logo=react&logoColor=black)](https://react.dev/)
+[![C# ASP.NET Core 8](https://img.shields.io/badge/ASP.NET_Core-8.0-512bd4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_CSS-4.0-38bdf8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![SignalR](https://img.shields.io/badge/Real--Time-SignalR_&_SSE-brightgreen)](https://dotnet.microsoft.com/apps/aspnet/signalr)
+[![TypeScript 5.8](https://img.shields.io/badge/TypeScript-5.8-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
----
-
-## 1. System Architecture
-
-The repository provides two deployment architectures depending on your infrastructure preference:
-
-### Architecture Option A: Unified Full-Stack (Node.js + Express + React 19 SPA)
-- **Frontend:** React 19 + TypeScript + Tailwind CSS (bundled via Vite)
-- **Backend:** Express API server (`server.ts`) handling REST endpoints (`/api/*`), JWT Bearer tokens, PBKDF2 password hashing, and real-time polling
-- **Static Hosting:** In production mode (`NODE_ENV=production`), the Node server directly serves the compiled React application from the `/dist` directory with SPA fallback routing.
-- **Port:** Defaults to `3000`.
-
-### Architecture Option B: C# / ASP.NET Core 8 Web API
-- **Framework:** ASP.NET Core 8 Web API (`HospitalQueue.csproj`, `Program.cs`, `Controllers/`, `Models/`, `Db/`, `Hubs/`, `Utils/`)
-- **Database:** Entity Framework Core In-Memory database with automatic seeder
-- **Real-Time Engine:** ASP.NET Core SignalR hub (`/hubs/queue`) with group subscriptions
-- **Authentication:** Dual mode: PBKDF2 password authentication and Google OAuth 2.0 with stateful HTTP-only session cookies
-- **Port:** Defaults to `5000` (or `8080` in containerized environments).
-
-### Architecture Option C: Decoupled Deployments
-- **Frontend:** Static SPA deployed to Vercel, Netlify, Cloudflare Pages, AWS S3 + CloudFront, or Firebase Hosting.
-- **Backend:** API deployed to Render, Railway, AWS ECS, Google Cloud Run, or Azure App Service.
+> **A modern, intelligent, real-time hospital queue management platform designed to eliminate waiting room congestion, prioritize acute clinical emergencies, and provide stress-free digital passes for patients and doctors.**
 
 ---
 
-## 2. Deployment Guide: Full-Stack Node.js + React (Fastest & Recommended)
+## 📑 Table of Contents
 
-### Method 1: Using Docker (Containerized)
-A production multi-stage `Dockerfile` is provided in the repository.
-
-1. **Build the Docker container:**
-   ```bash
-   docker build -t hospital-queue-system .
-   ```
-2. **Run the container:**
-   ```bash
-   docker run -d -p 3000:3000 \
-     -e NODE_ENV=production \
-     -e PORT=3000 \
-     -e JWT_SECRET=your-production-secure-random-secret \
-     --name hospital-app \
-     hospital-queue-system
-   ```
-3. Visit `http://localhost:3000`.
-
-### Method 2: Google Cloud Run / AWS App Runner / DigitalOcean App Platform
-1. Connect your Git repository or push the Docker image to Google Artifact Registry / Amazon ECR / Docker Hub.
-2. In Cloud Run or App Runner:
-   - **Container Port:** `3000`
-   - **Environment Variables:**
-     - `NODE_ENV=production`
-     - `PORT=3000`
-     - `JWT_SECRET=<generate a secure 64-character string>`
-3. Set CPU allocation to 1 vCPU and memory to 512MB or 1GB.
-
-### Method 3: Platform-as-a-Service (Render, Railway, Fly.io, Heroku)
-1. **Render.com (Web Service):**
-   - **Build Command:** `npm install && npm run build`
-   - **Start Command:** `npm start` (runs `tsx server.ts`)
-   - **Environment Variables:**
-     - `NODE_ENV`: `production`
-     - `PORT`: `3000`
-     - `JWT_SECRET`: `secure-secret-key`
-
-2. **Railway.app:**
-   - Link repository. Railway automatically detects Node.js.
-   - Set start command to `npm start`.
-   - Add `PORT` (e.g. 3000) and `JWT_SECRET`.
+- [🌟 What Is This Website?](#-what-is-this-website)
+  - [The Problem We Solve](#the-problem-we-solve)
+  - [Key User Roles](#key-user-roles)
+- [⚡ Quick Start (Run Locally in 60 Seconds)](#-quick-start-run-locally-in-60-seconds)
+  - [Demo Accounts & Credentials](#demo-accounts--credentials)
+- [🎮 5-Minute Interactive Walkthrough](#-5-minute-interactive-walkthrough)
+- [🖥️ System Views & Interactive Tour](#️-system-views--interactive-tour)
+  - [1. Multi-View Simulation Command Center](#1-multi-view-simulation-command-center)
+  - [2. Self-Service Patient Kiosk](#2-self-service-patient-kiosk)
+  - [3. Doctor Consultation Station](#3-doctor-consultation-station)
+  - [4. Public TV Lobby Display](#4-public-tv-lobby-display)
+  - [5. Patient Mobile Pass & Live Tracker](#5-patient-mobile-pass--live-tracker)
+  - [6. Security & Audit Console](#6-security--audit-console)
+  - [7. C# Architecture & Code Explorer](#7-c-architecture--code-explorer)
+- [🧠 Clinical Triage & Priority Scoring Engine](#-clinical-triage--priority-scoring-engine)
+- [📂 Project Architecture (Frontend & Backend Folders)](#-project-architecture-frontend--backend-folders)
+- [🚀 Deployment Guide](#-deployment-guide)
+  - [Option A: Google Cloud Run (Recommended)](#option-a-google-cloud-run-recommended)
+  - [Option B: Docker & Docker Compose](#option-b-docker--docker-compose)
+  - [Option C: Dedicated C# ASP.NET Core 8 Web API](#option-c-dedicated-c-aspnet-core-8-web-api)
+  - [Option D: Static Edge CDN (Vercel / Netlify / Cloudflare)](#option-d-static-edge-cdn-vercel--netlify--cloudflare)
+- [🔌 REST API & Real-Time Specifications](#-rest-api--real-time-specifications)
+- [⚙️ Environment Variables](#️-environment-variables)
+- [❓ Frequently Asked Questions (FAQ)](#-frequently-asked-questions-faq)
 
 ---
 
-## 3. Deployment Guide: C# ASP.NET Core 8 Web API
+## 🌟 What Is This Website?
 
-### Method 1: Azure App Service (Linux)
-1. **Publish release binaries locally:**
-   ```bash
-   dotnet publish HospitalQueue.csproj -c Release -o ./publish
-   ```
-2. **Deploy to Azure App Service via Azure CLI:**
-   ```bash
-   az webapp up --name stjude-hospital-queue --resource-group rg-hospital --runtime "DOTNETCORE:8.0" --sku B1
-   ```
-3. In Azure Portal > Configuration:
-   - `ASPNETCORE_ENVIRONMENT`: `Production`
+The **St. Jude Smart Hospital Queue Optimization System** is a full-featured clinical workflow application that replaces confusing paper tickets and chaotic hospital waiting halls with an **intelligent, automated, triage-aware dispatch system**.
 
-### Method 2: Docker Container (`Dockerfile.dotnet`)
-1. **Build the .NET 8 Docker image:**
-   ```bash
-   docker build -f Dockerfile.dotnet -t hospital-queue-dotnet:latest .
-   ```
-2. **Run container:**
-   ```bash
-   docker run -d -p 5000:5000 \
-     -e ASPNETCORE_ENVIRONMENT=Production \
-     -e ASPNETCORE_URLS=http://+:5000 \
-     --name hospital-dotnet \
-     hospital-queue-dotnet:latest
-   ```
+### The Problem We Solve
+- ❌ **Traditional First-Come, First-Served (FIFO) is dangerous:** A patient suffering acute cardiac distress should never wait behind someone needing routine medication refills just because they arrived 5 minutes later.
+- ❌ **Waiting Room Anxiety:** Patients sit for hours without knowing their true position, doctor status, or estimated consultation time.
+- ❌ **Doctor Inefficiency:** Physicians waste consultation minutes manually stepping into hallways or searching for the next patient.
 
-### Method 3: Self-Hosted Linux VM (Ubuntu / Debian + NGINX + systemd)
-1. **Install .NET 8 ASP.NET Core Runtime on server:**
-   ```bash
-   sudo apt-get update && sudo apt-get install -y aspnetcore-runtime-8.0
-   ```
-2. **Publish and copy files:**
-   ```bash
-   dotnet publish -c Release -o ./publish
-   scp -r ./publish/* user@your-server-ip:/var/www/hospital-queue/
-   ```
-3. **Configure systemd service (`/etc/systemd/system/hospital-queue.service`):**
-   ```ini
-   [Unit]
-   Description=St. Jude Hospital Queue ASP.NET Core Service
-   After=network.target
-
-   [Service]
-   WorkingDirectory=/var/www/hospital-queue
-   ExecStart=/usr/bin/dotnet /var/www/hospital-queue/HospitalQueue.dll
-   Restart=always
-   RestartSec=10
-   SyslogIdentifier=hospital-queue
-   User=www-data
-   Environment=ASPNETCORE_ENVIRONMENT=Production
-   Environment=ASPNETCORE_URLS=http://127.0.0.1:5000
-
-   [Install]
-   WantedBy=multi-user.target
-   ```
-   Enable and start: `sudo systemctl enable --now hospital-queue`
-4. **Configure NGINX reverse proxy with WebSocket/SignalR support:**
-   ```nginx
-   server {
-       listen 80;
-       server_name queue.stjude-hospital.org;
-
-       location / {
-           proxy_pass http://127.0.0.1:5000;
-           proxy_http_version 1.1;
-           proxy_set_header Upgrade $http_upgrade;
-           proxy_set_header Connection "upgrade";
-           proxy_set_header Host $host;
-           proxy_cache_bypass $http_upgrade;
-           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-           proxy_set_header X-Forwarded-Proto $scheme;
-       }
-   }
-   ```
-   Add SSL certificate with `certbot --nginx -d queue.stjude-hospital.org`.
+### Key User Roles
+| Role | Portal / View | Primary Actions |
+| :--- | :--- | :--- |
+| **Patients** | **Self-Service Kiosk & Mobile Pass** | Issue check-in ticket, select acuity, track live line countdown via QR code on mobile. |
+| **Doctors** | **Doctor Consultation Station** | View priority-ranked queue, call next patient with 1 click, trigger room chimes, complete consultations. |
+| **Lobby Visitors** | **Public TV Display** | High-contrast display board with audio chimes and voice announcements for called tickets. |
+| **Triage Nurses** | **Multi-View Command Center** | Override patient triage acuity, monitor wait times across all departments in real time. |
+| **Admins / Security** | **Security & Audit Console** | Manage doctor sessions, inspect PBKDF2 authentication events, and export immutable audit trails. |
 
 ---
 
-## 4. Deployment Guide: Decoupled Frontend (Vercel, Netlify, Cloudflare Pages)
+## ⚡ Quick Start (Run Locally in 60 Seconds)
 
-If you prefer hosting the React frontend on a global edge CDN while running the backend API separately:
+### Prerequisites
+- **Node.js 18+** or **Node.js 22** (LTS recommended)
+- *(Optional)* **.NET 8 SDK** (if you wish to build or run the C# ASP.NET Core backend natively)
 
-### Step 1: Build the Static Frontend
+### Step 1: Clone the repository
+```bash
+git clone https://github.com/your-username/hospital-queue-system.git
+cd hospital-queue-system
+```
+
+### Step 2: Install dependencies
+```bash
+npm install
+```
+
+### Step 3: Start development server
+```bash
+npm run dev
+```
+
+Open your browser to:
+👉 **`http://localhost:3000`**
+
+> **How it works behind the scenes:**
+> `npm run dev` starts `server.ts`. It automatically detects if .NET 8 is available on your machine. If .NET is installed, it boots the C# ASP.NET Core server in `Backend/` and proxies all `/api/*` and SignalR `/hubs/*` requests to C# Kestrel on port 5050. If .NET is not installed, it seamlessly utilizes the built-in high-performance fallback engine so you never experience container crashes or missing dependencies!
+
+---
+
+### Demo Accounts & Credentials
+
+You can test any role instantly with pre-seeded accounts:
+
+| Role | Email | Password | Department | Features Available |
+| :--- | :--- | :--- | :--- | :--- |
+| **Doctor** | `dr.jenkins@stjude-hospital.org` | `Doctor123!` | Cardiology Clinic | Calling patients, completing visits, loudspeaker recall |
+| **Doctor** | `dr.chen@stjude-hospital.org` | `Doctor123!` | Emergency (ER) | Acute triage queue, code red alerts, bypass control |
+| **Admin** | `admin.security@stjude-hospital.org` | `Admin123!` | All Departments | Audit log inspector, session revoker, security settings |
+| **Patient** | `patient.rigby@gmail.com` | `Patient123!` | Cardiology Clinic | Pre-linked active ticket `CARD-101`, digital pass, live status |
+
+*(Quick-switch demo buttons are also provided in the top navigation bar!)*
+
+---
+
+## 🎮 5-Minute Interactive Walkthrough
+
+Want to experience the full clinical lifecycle right away? Follow this 5-step test path:
+
+1. **Launch the Multi-View Simulation:**
+   - Click the **"Multi-View Simulation"** tab in the top navigation bar.
+   - You will see 4 live panels simultaneously: **Kiosk (Left)**, **Doctor Console (Middle-Left)**, **Patient Pass (Middle-Right)**, and **TV Lobby Board (Right)**.
+2. **Issue an Emergency Ticket:**
+   - In the Kiosk panel, enter name *"Arthur Pendelton"*.
+   - Set Urgency to **"Emergency (Level 4)"**.
+   - Click **"Issue Digital Ticket"**.
+   - Notice: An immediate emergency chime rings, and the ticket instantly **bypasses all other waiting patients** to take the #1 queue spot!
+3. **Issue an Urgent Appointment Ticket:**
+   - Enter name *"Maria Garcia"*, choose **"Urgent (Level 3)"**, and toggle **"Has Scheduled Appointment"** to ON.
+   - Notice how the clinical score calculates: `Wait Time + Urgency (60 pts) + Appointment Bonus (15 pts)`.
+4. **Call the Next Patient as Doctor:**
+   - Look at the Doctor Station panel. Click **"Call Next Patient"**.
+   - Listen for the hospital chime: *"Ding-Dong: Ticket CARD-101, please proceed to Room 302."*
+   - Watch the TV Lobby Board flash with the live room assignment.
+   - Watch the Patient Mobile Pass update in real time from **"Waiting (Position #1)"** to **"NOW CALLING - PLEASE PROCEED TO ROOM 302"**!
+5. **Complete Consultation:**
+   - Click **"Complete Consultation"** in the Doctor Station. The patient is marked completed, and the next patient in line advances.
+
+---
+
+## 🖥️ System Views & Interactive Tour
+
+### 1. Multi-View Simulation Command Center
+- **Access:** Navigation item `Multi-View Demo`
+- **Purpose:** A master dashboard that displays the Kiosk, Doctor Station, Patient Pass, and Lobby Board all on one screen. Includes instant simulation reset controls and live event feeds.
+
+### 2. Self-Service Patient Kiosk
+- **Access:** Navigation item `Self-Service Kiosk`
+- **Purpose:** Touch-friendly kiosk interface placed at hospital entrances. Patients check in, select their primary symptoms/acuity, enter scheduled appointments, and receive a digital ticket with QR code.
+
+### 3. Doctor Consultation Station
+- **Access:** Navigation item `Doctor Station`
+- **Purpose:** Specialized clinical dashboard for attending physicians. Automatically sorts patients by calculated acuity score, displays wait time escalation indicators, allows 1-click patient calling, and provides a "Recall Speaker" button if a patient does not respond.
+
+### 4. Public TV Lobby Display
+- **Access:** Navigation item `TV Lobby Display`
+- **Purpose:** Fullscreen, high-contrast display designed for 55"+ waiting room monitors. Features high-visibility ticket numbers, blinking alerts for newly called tickets, audio chime announcements, and department status meters.
+
+### 5. Patient Mobile Pass & Live Tracker
+- **Access:** Navigation item `Patient Dashboard`
+- **Purpose:** Personal mobile-optimized ticket pass. Patients can step outside, visit the hospital cafeteria, or wait in their car while watching their live wait time countdown, tickets ahead, and push notification status.
+
+### 6. Security & Audit Console
+- **Access:** Top-right profile menu > `Security Console`
+- **Purpose:** Enterprise-grade security panel tracking active user sessions, IP addresses, user agents, PBKDF2 password authentication, and tamper-resistant audit logs.
+
+### 7. C# Architecture & Code Explorer
+- **Access:** Navigation item `C# Architecture`
+- **Purpose:** An interactive in-app code browser showcasing the real C# ASP.NET Core 8 Web API source code (`Backend/Program.cs`, `Backend/Controllers/AuthController.cs`, `Backend/Controllers/QueueController.cs`, `Backend/Models/DTOs.cs`, and `Backend/HospitalQueue.csproj`).
+
+---
+
+## 🧠 Clinical Triage & Priority Scoring Engine
+
+Unlike naive FIFO (first-in, first-out) queues, the St. Jude queue optimization engine uses a multi-factor dynamic formula executed in real time:
+
+$$\text{Priority Score} = (\text{Wait Time (mins)} \times 1.5) + (\text{Acuity Level} \times 20) + (\text{Appointment Bonus})$$
+
+### Scoring Factors Explained:
+1. **Acuity Level (Urgency):**
+   - **Level 4 - Emergency:** Score automatically jumps to `999,999 + Wait Time`. Instantly bypasses all non-emergencies and sounds a red alert.
+   - **Level 3 - Urgent (Chest pain, acute fever, fractures):** `+60 points`.
+   - **Level 2 - Priority (Follow-ups, scheduled procedures):** `+40 points`.
+   - **Level 1 - Routine (General checkups, standard renewals):** `+20 points`.
+2. **Scheduled Appointment Bonus:**
+   - Patients with verified pre-booked clinic appointments receive `+15 points` to honor their reserved slot while still deferring to higher clinical emergencies.
+3. **Wait Time Escalation (Anti-Starvation):**
+   - Every patient gains `1.5 points per minute` elapsed. A routine patient waiting 40 minutes earns `60 points`, preventing lower-acuity patients from being stranded indefinitely.
+
+---
+
+## 📂 Project Architecture (Frontend & Backend Folders)
+
+The codebase is organized into dedicated, intuitive folders for simple navigation:
+
+```text
+├── Frontend/                           # React 19 Frontend SPA (Vite + Tailwind)
+│   ├── assets/                         # Hospital visual assets and imagery
+│   ├── components/                     # Modular React views
+│   │   ├── AuthModal.tsx               # Login, Signup & Google OAuth modal
+│   │   ├── CodeExplorerView.tsx        # C# Backend Architecture Viewer
+│   │   ├── DigitalTicketPass.tsx       # Printable/scannable QR ticket pass
+│   │   ├── DoctorView.tsx              # Physician hopper and consultation panel
+│   │   ├── HomePage.tsx                # Hospital portal landing page
+│   │   ├── KioskView.tsx               # Patient check-in touch screen
+│   │   ├── LobbyView.tsx               # High-contrast public TV display
+│   │   ├── MultiViewDemo.tsx           # 4-in-1 live synchronized simulation
+│   │   ├── PatientDashboard.tsx        # Personal patient queue tracker
+│   │   ├── SecurityDashboard.tsx       # Audit logs & active session monitor
+│   │   ├── SimulationControls.tsx      # Quick scenario injector & reset buttons
+│   │   └── UserNavMenu.tsx             # Profile, role switch & navigation bar
+│   ├── data/                           # C# source code data for in-app browser
+│   ├── services/                       # Client networking & audio
+│   │   ├── apiClient.ts                # REST & SSE stream client
+│   │   ├── authService.ts              # Session & JWT token state manager
+│   │   ├── queueEngine.ts              # Queue synchronization engine
+│   │   └── soundEffects.ts             # Web Audio API chime & speech synthesis
+│   ├── types/                          # TypeScript interfaces (Queue, User, Ticket)
+│   ├── App.tsx                         # Main navigation controller
+│   ├── main.tsx                        # React DOM root entry point
+│   └── index.css                       # Tailwind CSS 4 directives
+│
+├── Backend/                            # C# ASP.NET Core 8 Web API
+│   ├── HospitalQueue.csproj            # .NET 8 project file (EF Core, SignalR)
+│   ├── Program.cs                      # Kestrel startup, DI, CORS & middleware
+│   ├── Controllers/                    # ASP.NET Core API Controllers
+│   │   ├── AuthController.cs           # PBKDF2 hash, JWT tokens & session cookies
+│   │   ├── DepartmentsController.cs    # Hospital departments API
+│   │   ├── DoctorController.cs         # Call next, complete visit, recall
+│   │   ├── EventsController.cs         # Server-Sent Events (SSE) live stream
+│   │   ├── QueueController.cs          # Overview, ticket issuance, patient status
+│   │   └── SimulationController.cs     # Simulation state reset and seeding
+│   ├── Db/                             # Entity Framework Core In-Memory database
+│   │   ├── HospitalDbContext.cs        # EF Core DbContext
+│   │   └── DbSeeder.cs                 # Clinical demo data seeder
+│   ├── Hubs/                           # Real-Time SignalR
+│   │   └── QueueHub.cs                 # WebSocket hub for live queue updates
+│   ├── Models/                         # C# Domain Models & DTOs
+│   │   ├── Department.cs               # Department entity
+│   │   ├── DTOs.cs                     # Request & Response DTOs
+│   │   ├── Enums.cs                    # UrgencyLevel, TicketStatus enums
+│   │   ├── Ticket.cs                   # Ticket entity with priority calculator
+│   │   └── UserAccount.cs              # User entity with password salts
+│   └── Utils/                          # C# Utilities
+│       ├── AuthUtils.cs                # PBKDF2 password hashing & HMAC-SHA256 JWT
+│       ├── PriorityCalculator.cs       # C# priority algorithm implementation
+│       └── QueueEventsBroadcaster.cs   # Multi-subscriber thread-safe event bus
+│
+├── server.ts                           # Unified gateway & container launcher
+├── vite.config.ts                      # Vite build configuration (points to Frontend/)
+├── tsconfig.json                       # TypeScript compiler options
+├── Dockerfile                          # Production multi-stage Dockerfile
+├── Dockerfile.dotnet                   # Standalone C# .NET 8 Dockerfile
+└── docker-compose.yml                  # Compose configuration for container options
+```
+
+---
+
+## 🚀 Deployment Guide
+
+### Option A: Google Cloud Run (Recommended)
+This application includes zero-crash container environment detection, making deployment to Google Cloud Run instantaneous.
+
+1. **Deploy with Cloud Run CLI:**
+   ```bash
+   gcloud run deploy hospital-queue-system \
+     --source . \
+     --platform managed \
+     --region us-central1 \
+     --allow-unauthenticated \
+     --port 3000
+   ```
+2. Cloud Run builds the container and maps incoming traffic to port 3000 automatically.
+
+---
+
+### Option B: Docker & Docker Compose
+
+#### Using Docker Compose:
+To spin up the complete containerized stack in one command:
+```bash
+docker-compose up --build
+```
+- Full-Stack Gateway: Available at `http://localhost:3000`
+- Direct .NET 8 API (if running option 2): Available at `http://localhost:5000`
+
+#### Using the Full-Stack Dockerfile:
+```bash
+# 1. Build Docker image
+docker build -t hospital-queue-system .
+
+# 2. Run container
+docker run -d -p 3000:3000 \
+  -e NODE_ENV=production \
+  -e PORT=3000 \
+  --name hospital-app \
+  hospital-queue-system
+```
+
+---
+
+### Option C: Dedicated C# ASP.NET Core 8 Web API
+If your enterprise hosts the backend on Azure App Service, AWS ECS, or a self-hosted Windows/Linux server:
+
+1. **Build and Publish Binaries:**
+   ```bash
+   cd Backend
+   dotnet publish HospitalQueue.csproj -c Release -o ../publish
+   ```
+2. **Run C# Kestrel directly:**
+   ```bash
+   dotnet ../publish/HospitalQueue.dll --urls=http://0.0.0.0:5000
+   ```
+3. **Build with `Dockerfile.dotnet`:**
+   ```bash
+   docker build -f Dockerfile.dotnet -t hospital-dotnet-api .
+   docker run -d -p 5000:5000 -e ASPNETCORE_ENVIRONMENT=Production hospital-dotnet-api
+   ```
+
+---
+
+### Option D: Static Edge CDN (Vercel / Netlify / Cloudflare)
+You can deploy the `Frontend/` folder to any static hosting provider:
+
 ```bash
 npm run build
 ```
-This compiles optimized HTML, CSS, and JS assets into the `dist/` directory.
-
-### Step 2: Deploy to Frontend Hosts
-
-1. **Vercel:**
-   - Framework Preset: **Vite**
-   - Root Directory: `./`
-   - Build Command: `npm run build`
-   - Output Directory: `dist`
-   - Add Single-Page App rewrite rule in `vercel.json`:
-     ```json
-     {
-       "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
-     }
-     ```
-
-2. **Netlify:**
-   - Build Command: `npm run build`
-   - Publish Directory: `dist`
-   - Add `dist/_redirects` or `public/_redirects`:
-     ```text
-     /*    /index.html   200
-     ```
-
-3. **Cloudflare Pages:**
-   - Build Command: `npm run build`
-   - Build Output Directory: `dist`
-
-4. **AWS S3 + CloudFront:**
-   - Upload `/dist` files to an S3 bucket configured for static website hosting.
-   - Attach CloudFront CDN distribution with custom error response: Redirect 404 to `/index.html` with response code 200.
+- Output folder: `dist/`
+- Set Single-Page Application (SPA) rewrite rule to redirect all routes to `index.html`.
 
 ---
 
-## 5. Environment Variables & Production Checklist
+## 🔌 REST API & Real-Time Specifications
 
-| Variable | Description | Default / Example |
-| :--- | :--- | :--- |
-| `NODE_ENV` | Environment mode (`development` or `production`) | `production` |
-| `PORT` | Listening HTTP port | `3000` (Node) / `5000` (.NET) |
-| `JWT_SECRET` | Cryptographic secret for signing API session JWTs | *Must be 32+ char random string* |
-| `ALLOWED_ORIGIN` | Permitted CORS origin(s) for decoupled frontend | `https://hospital.yourdomain.com` |
-| `ASPNETCORE_ENVIRONMENT` | .NET Core environment | `Production` |
+All endpoints are standardized and support both JSON payloads and HTTP Bearer tokens:
 
-### Production Checklist:
-- [x] Configure HTTPS/TLS using Cloudflare, Let's Encrypt, or cloud provider certificates.
-- [x] Ensure secure cookie configuration: `Secure=true`, `SameSite=Lax`, and `HttpOnly=true`.
-- [x] Set strong random string for `JWT_SECRET`.
-- [x] Point DNS records (`A` or `CNAME`) to your load balancer or hosting provider.
+| Method | Endpoint | Description | Sample Request / Query |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/departments` | List all hospital departments | — |
+| `GET` | `/api/queue/overview` | Full multi-department snapshot with wait counts | — |
+| `GET` | `/api/queue/:deptId` | Specific department waiting queue | `/api/queue/cardiology` |
+| `GET` | `/api/queue/patient/:id` | Look up patient's active ticket & wait position | `/api/queue/patient/usr-patient-rigby` |
+| `POST` | `/api/tickets` | Issue a new patient ticket | `{"departmentId": "cardiology", "patientName": "Jane", "urgency": 2, "hasAppointment": true}` |
+| `GET` | `/api/tickets/:code` | Look up ticket details by code | `/api/tickets/CARD-101` |
+| `POST` | `/api/doctor/call-next` | Advance and call the next priority patient | `{"departmentId": "cardiology", "roomNumber": "Room 302", "doctorName": "Dr. Jenkins"}` |
+| `POST` | `/api/doctor/complete-consultation` | Mark consultation completed and discharge | `{"departmentId": "cardiology", "ticketId": "t-seed-1"}` |
+| `POST` | `/api/doctor/recall` | Re-announce the current patient over lobby speakers | `{"departmentId": "cardiology"}` |
+| `POST` | `/api/simulation/reset` | Reset database to initial seed data | — |
+| `GET` | `/api/events/stream` | Server-Sent Events (SSE) live updates | Stream: `data: {"type": "PATIENT_CALLED", ...}` |
+| `POST` | `/api/auth/login` | Authenticate user and receive token | `{"email": "dr.jenkins@stjude-hospital.org", "password": "Doctor123!"}` |
+| `POST` | `/api/auth/signup` | Create a new user profile | `{"email": "john@doe.com", "password": "Secret123!", "fullName": "John Doe"}` |
+| `GET` | `/api/auth/me` | Fetch currently authenticated user session | `Authorization: Bearer <token>` |
+| `GET` | `/api/auth/audit-logs` | Retrieve security and access audit logs | — |
+
+---
+
+## ⚙️ Environment Variables
+
+Copy `.env.example` to `.env` to configure optional overrides:
+
+```bash
+# Server Port (defaults to 3000)
+PORT=3000
+
+# Environment Mode (development | production)
+NODE_ENV=development
+
+# JWT Secret Key for token signing
+JWT_SECRET=StJude-Hospital-Secure-Secret-Key-2026
+
+# Allowed CORS Origins (optional, defaults to all origins)
+ALLOWED_ORIGIN=*
+
+# .NET ASP.NET Core Environment
+ASPNETCORE_ENVIRONMENT=Production
+```
+
+---
+
+## ❓ Frequently Asked Questions (FAQ)
+
+### 1. Does the app make audible sound announcements?
+**Yes!** When a doctor calls a patient, a two-tone hospital chime plays and browser Speech Synthesis reads the announcement (*"Ticket CARD-101, please proceed to Room 302"*).
+> *Note: Browsers require a user interaction (like clicking a button) before audio can play.*
+
+### 2. Can I run this on a tablet or mobile device?
+**Yes!** The application is 100% responsive.
+- Mount tablets on walls or podiums to run the **Self-Service Kiosk**.
+- Open the **Patient Mobile Pass** on any iPhone or Android phone by scanning the QR code on the ticket.
+- Connect a PC or smart TV stick to a widescreen monitor to run the **TV Lobby Display**.
+
+### 3. What happens if .NET 8 is not installed on my computer?
+No problem! The application includes an **embedded high-performance engine** in `server.ts`. When you run `npm run dev` or deploy to container environments without .NET, the system automatically detects this and serves all queue logic, priority calculations, and API routes seamlessly without throwing errors.
+
+### 4. Can I reset the simulation if I make too many test tickets?
+**Yes!** Simply click the **"Reset Simulation"** button in the Multi-View Demo or top bar. It will instantly restore the queue to the clean, initial clinical demo state.
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — you are free to modify, distribute, and use it in clinical and commercial projects.

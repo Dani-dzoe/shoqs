@@ -32,7 +32,8 @@ RUN npm install --omit=dev
 
 # Copy built frontend assets and server files
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/server ./server
+COPY --from=builder /app/Backend ./Backend
+COPY --from=builder /app/Frontend ./Frontend
 COPY --from=builder /app/server.ts ./server.ts
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
 

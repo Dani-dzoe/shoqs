@@ -6,14 +6,14 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copy project file and restore dependencies
-COPY HospitalQueue.csproj ./
-RUN dotnet restore HospitalQueue.csproj
+COPY Backend/HospitalQueue.csproj ./Backend/
+RUN dotnet restore Backend/HospitalQueue.csproj
 
 # Copy remaining source code
-COPY . ./
+COPY Backend/ ./Backend/
 
 # Build and publish release binaries
-RUN dotnet publish HospitalQueue.csproj -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish Backend/HospitalQueue.csproj -c Release -o /app/publish /p:UseAppHost=false
 
 # Step 2: ASP.NET Core Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
