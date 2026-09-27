@@ -18,10 +18,15 @@
     "jsx": "react-jsx",
     "paths": {
       "@/*": [
-        "./*"
+        "./Frontend/*"
       ]
     },
     "allowImportingTsExtensions": true,
     "noEmit": true
-  }
+  },
+  "include": [
+    "Frontend/**/*",
+    "server.ts",
+    "vite.config.ts"
+  ]
 }
