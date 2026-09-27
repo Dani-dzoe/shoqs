@@ -1,0 +1,6 @@
+{
+  "name": "Smart Hospital Queue Optimization System",
+  "description": "Production-ready C# ASP.NET Core 8 & Real-Time SignalR Hospital Queue Optimization MVP with Patient Kiosk, Doctor Portal, and Public Lobby Display.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

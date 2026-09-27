@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  # Option 1: Full-Stack Node.js + Express + React SPA (Vite)
+  hospital-fullstack:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hospital-queue-fullstack
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - JWT_SECRET=stjude-hospital-super-secret-key-production-change-me
+      - ALLOWED_ORIGIN=*
+
+  # Option 2: C# ASP.NET Core 8 Web API
+  hospital-dotnet-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dotnet
+    container_name: hospital-queue-dotnet-api
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5000
