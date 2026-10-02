@@ -9,13 +9,10 @@ import { KioskView } from './components/KioskView';
 import { DoctorView } from './components/DoctorView';
 import { LobbyView } from './components/LobbyView';
 import { MultiViewDemo } from './components/MultiViewDemo';
-import { CodeExplorerView } from './components/CodeExplorerView';
-import { SecurityDashboard } from './components/SecurityDashboard';
 import { PatientDashboard } from './components/PatientDashboard';
 import { UserNavMenu } from './components/UserNavMenu';
 import { AuthModal } from './components/AuthModal';
 import { UserRole } from './types/auth';
-import { PROGRAM_CS_CODE, CSPROJ_CODE } from './data/csharpCode';
 import { isSoundMuted, toggleSound } from './services/soundEffects';
 import { 
   Home,
@@ -23,18 +20,16 @@ import {
   Stethoscope, 
   Tv, 
   Columns, 
-  Code2, 
   Volume2, 
   VolumeX, 
   Activity, 
-  ShieldCheck,
   QrCode,
   Menu,
   X,
   Clock
 } from 'lucide-react';
 
-export type AppView = 'home' | 'patient' | 'triview' | 'kiosk' | 'doctor' | 'lobby' | 'security' | 'csharp';
+export type AppView = 'home' | 'patient' | 'triview' | 'kiosk' | 'doctor' | 'lobby';
 
 export default function App() {
   const [activeView, setActiveView] = useState<AppView>('home');
@@ -43,7 +38,7 @@ export default function App() {
   const [defaultAuthRole, setDefaultAuthRole] = useState<UserRole>('Patient');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Support URL hash routing (e.g. #home, #kiosk, #doctor, #lobby, #security, #csharp)
+  // Support URL hash routing (e.g. #home, #kiosk, #doctor, #lobby, #patient, #triview)
   useEffect(() => {
     const handleHash = () => {
       const hash = window.location.hash.replace('#', '').toLowerCase();
@@ -52,8 +47,6 @@ export default function App() {
       else if (hash === 'kiosk') setActiveView('kiosk');
       else if (hash === 'doctor') setActiveView('doctor');
       else if (hash === 'lobby') setActiveView('lobby');
-      else if (hash === 'security' || hash === 'auth') setActiveView('security');
-      else if (hash === 'csharp' || hash === 'code') setActiveView('csharp');
       else if (hash === 'triview' || hash === 'demo') setActiveView('triview');
     };
 
@@ -167,28 +160,6 @@ export default function App() {
             >
               Tri-View Simulator
             </button>
-
-            <button
-              onClick={() => setViewWithHash('security')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap ${
-                activeView === 'security'
-                  ? 'bg-blue-600 text-white'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
-              }`}
-            >
-              Security
-            </button>
-
-            <button
-              onClick={() => setViewWithHash('csharp')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap ${
-                activeView === 'csharp'
-                  ? 'bg-blue-600 text-white'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
-              }`}
-            >
-              C# Spec
-            </button>
           </nav>
 
           {/* Zone 3: 1-2 Primary Actions + User Profile & Audio */}
@@ -207,7 +178,6 @@ export default function App() {
 
             <UserNavMenu
               onOpenAuthModal={() => handleOpenAuth()}
-              onOpenSecurityCenter={() => setViewWithHash('security')}
               onOpenPatientDashboard={() => setViewWithHash('patient')}
             />
 
@@ -299,26 +269,6 @@ export default function App() {
               <Columns className="w-4 h-4 text-indigo-400" />
               <span>Tri-View Demo</span>
             </button>
-
-            <button
-              onClick={() => setViewWithHash('security')}
-              className={`p-2.5 rounded-lg text-xs font-medium flex items-center gap-2 ${
-                activeView === 'security' ? 'bg-blue-600 text-white' : 'bg-slate-900 text-slate-300'
-              }`}
-            >
-              <ShieldCheck className="w-4 h-4 text-purple-400" />
-              <span>Security</span>
-            </button>
-
-            <button
-              onClick={() => setViewWithHash('csharp')}
-              className={`col-span-2 p-2.5 rounded-lg text-xs font-medium flex items-center justify-center gap-2 ${
-                activeView === 'csharp' ? 'bg-blue-600 text-white' : 'bg-slate-900 text-slate-300'
-              }`}
-            >
-              <Code2 className="w-4 h-4 text-cyan-400" />
-              <span>C# Source Code & Architecture Spec</span>
-            </button>
           </div>
         )}
       </header>
@@ -377,21 +327,6 @@ export default function App() {
             <LobbyView />
           </div>
         )}
-
-        {activeView === 'security' && (
-          <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <SecurityDashboard onOpenAuthModal={() => handleOpenAuth()} />
-          </div>
-        )}
-
-        {activeView === 'csharp' && (
-          <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <CodeExplorerView
-              programCsContent={PROGRAM_CS_CODE}
-              csprojContent={CSPROJ_CODE}
-            />
-          </div>
-        )}
       </main>
 
       {/* Persistent Footer */}
@@ -401,20 +336,13 @@ export default function App() {
             <div className="w-2 h-2 rounded-full bg-emerald-400" />
             <span className="text-slate-300 font-medium">St. Jude Hospital Queue Optimization System</span>
             <span className="hidden sm:inline text-slate-600">·</span>
-            <span className="hidden sm:inline text-slate-500">C# ASP.NET Core 8 & SignalR Hub</span>
+            <span className="hidden sm:inline text-slate-500">Clinical Queue & Dispatch Management</span>
           </div>
 
           <div className="flex items-center gap-4 text-[11px] text-slate-500">
-            <span>Session Cookies (24h Expiry)</span>
+            <span>Real-Time Patient Flow</span>
             <span>·</span>
-            <span>Google OAuth 2.0</span>
-            <span>·</span>
-            <button
-              onClick={() => setViewWithHash('security')}
-              className="text-blue-400 hover:underline font-medium"
-            >
-              Session Registry
-            </button>
+            <span>© {new Date().getFullYear()} St. Jude Medical Pavilion</span>
           </div>
         </div>
       </footer>

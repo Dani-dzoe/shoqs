@@ -25,8 +25,6 @@
   - [3. Doctor Consultation Station](#3-doctor-consultation-station)
   - [4. Public TV Lobby Display](#4-public-tv-lobby-display)
   - [5. Patient Mobile Pass & Live Tracker](#5-patient-mobile-pass--live-tracker)
-  - [6. Security & Audit Console](#6-security--audit-console)
-  - [7. C# Architecture & Code Explorer](#7-c-architecture--code-explorer)
 - [🧠 Clinical Triage & Priority Scoring Engine](#-clinical-triage--priority-scoring-engine)
 - [📂 Project Architecture (Frontend & Backend Folders)](#-project-architecture-frontend--backend-folders)
 - [🚀 Deployment Guide](#-deployment-guide)
@@ -55,8 +53,7 @@ The **St. Jude Smart Hospital Queue Optimization System** is a full-featured cli
 | **Patients** | **Self-Service Kiosk & Mobile Pass** | Issue check-in ticket, select acuity, track live line countdown via QR code on mobile. |
 | **Doctors** | **Doctor Consultation Station** | View priority-ranked queue, call next patient with 1 click, trigger room chimes, complete consultations. |
 | **Lobby Visitors** | **Public TV Display** | High-contrast display board with audio chimes and voice announcements for called tickets. |
-| **Triage Nurses** | **Multi-View Command Center** | Override patient triage acuity, monitor wait times across all departments in real time. |
-| **Admins / Security** | **Security & Audit Console** | Manage doctor sessions, inspect PBKDF2 authentication events, and export immutable audit trails. |
+| **Triage Staff** | **Multi-View Command Center** | Override patient triage acuity, monitor wait times across all departments in real time. |
 
 ---
 
@@ -152,14 +149,6 @@ Want to experience the full clinical lifecycle right away? Follow this 5-step te
 - **Access:** Navigation item `Patient Dashboard`
 - **Purpose:** Personal mobile-optimized ticket pass. Patients can step outside, visit the hospital cafeteria, or wait in their car while watching their live wait time countdown, tickets ahead, and push notification status.
 
-### 6. Security & Audit Console
-- **Access:** Top-right profile menu > `Security Console`
-- **Purpose:** Enterprise-grade security panel tracking active user sessions, IP addresses, user agents, PBKDF2 password authentication, and tamper-resistant audit logs.
-
-### 7. C# Architecture & Code Explorer
-- **Access:** Navigation item `C# Architecture`
-- **Purpose:** An interactive in-app code browser showcasing the real C# ASP.NET Core 8 Web API source code (`Backend/Program.cs`, `Backend/Controllers/AuthController.cs`, `Backend/Controllers/QueueController.cs`, `Backend/Models/DTOs.cs`, and `Backend/HospitalQueue.csproj`).
-
 ---
 
 ## 🧠 Clinical Triage & Priority Scoring Engine
@@ -190,7 +179,6 @@ The codebase is organized into dedicated, intuitive folders for simple navigatio
 │   ├── assets/                         # Hospital visual assets and imagery
 │   ├── components/                     # Modular React views
 │   │   ├── AuthModal.tsx               # Login, Signup & Google OAuth modal
-│   │   ├── CodeExplorerView.tsx        # C# Backend Architecture Viewer
 │   │   ├── DigitalTicketPass.tsx       # Printable/scannable QR ticket pass
 │   │   ├── DoctorView.tsx              # Physician hopper and consultation panel
 │   │   ├── HomePage.tsx                # Hospital portal landing page
@@ -198,10 +186,8 @@ The codebase is organized into dedicated, intuitive folders for simple navigatio
 │   │   ├── LobbyView.tsx               # High-contrast public TV display
 │   │   ├── MultiViewDemo.tsx           # 4-in-1 live synchronized simulation
 │   │   ├── PatientDashboard.tsx        # Personal patient queue tracker
-│   │   ├── SecurityDashboard.tsx       # Audit logs & active session monitor
 │   │   ├── SimulationControls.tsx      # Quick scenario injector & reset buttons
 │   │   └── UserNavMenu.tsx             # Profile, role switch & navigation bar
-│   ├── data/                           # C# source code data for in-app browser
 │   ├── services/                       # Client networking & audio
 │   │   ├── apiClient.ts                # REST & SSE stream client
 │   │   ├── authService.ts              # Session & JWT token state manager

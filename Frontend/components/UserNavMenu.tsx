@@ -3,26 +3,20 @@ import { authService } from '../services/authService';
 import { AuthUser, UserRole } from '../types/auth';
 import { 
   LogOut, 
-  Shield, 
-  Cookie, 
   ChevronDown, 
   User, 
   Check, 
-  ExternalLink,
-  ShieldCheck,
   Stethoscope,
   Clock
 } from 'lucide-react';
 
 interface UserNavMenuProps {
   onOpenAuthModal: () => void;
-  onOpenSecurityCenter: () => void;
   onOpenPatientDashboard?: () => void;
 }
 
 export const UserNavMenu: React.FC<UserNavMenuProps> = ({
   onOpenAuthModal,
-  onOpenSecurityCenter,
   onOpenPatientDashboard
 }) => {
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(authService.getCurrentUser());
@@ -158,22 +152,11 @@ export const UserNavMenu: React.FC<UserNavMenuProps> = ({
             )}
 
             <button
-              onClick={() => {
-                setDropdownOpen(false);
-                onOpenSecurityCenter();
-              }}
-              className="w-full px-3 py-2 text-xs text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl flex items-center space-x-2 transition text-left cursor-pointer"
-            >
-              <ShieldCheck className="w-4 h-4 text-purple-400" />
-              <span>Token &amp; Security Center</span>
-            </button>
-
-            <button
               onClick={handleLogout}
-              className="w-full px-3 py-2 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-950/30 rounded-xl flex items-center space-x-2 transition text-left"
+              className="w-full px-3 py-2 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-950/30 rounded-xl flex items-center space-x-2 transition text-left cursor-pointer"
             >
               <LogOut className="w-4 h-4" />
-              <span>Revoke Token & Sign Out</span>
+              <span>Sign Out</span>
             </button>
           </div>
         </div>

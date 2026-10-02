@@ -29,7 +29,7 @@ import {
 } from 'lucide-react';
 
 interface HomePageProps {
-  onNavigate: (view: 'home' | 'kiosk' | 'doctor' | 'lobby' | 'triview' | 'security' | 'csharp') => void;
+  onNavigate: (view: 'home' | 'kiosk' | 'doctor' | 'lobby' | 'triview') => void;
   onOpenAuth: (defaultRole?: UserRole) => void;
 }
 
@@ -715,21 +715,21 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenAuth }) =>
             </div>
           </div>
 
-          {/* Station 4: Security & Access Control */}
+          {/* Station 4: Tri-View Simulator */}
           <div 
-            onClick={() => onNavigate('security')}
-            className="cursor-pointer bg-white rounded-xl border border-slate-200 p-5 sm:p-6 shadow-xs hover:border-purple-400 hover:shadow-md transition-all group flex flex-col justify-between h-full min-w-0"
+            onClick={() => onNavigate('triview')}
+            className="cursor-pointer bg-white rounded-xl border border-slate-200 p-5 sm:p-6 shadow-xs hover:border-indigo-400 hover:shadow-md transition-all group flex flex-col justify-between h-full min-w-0"
           >
             <div>
-              <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-                <ShieldCheck className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                <Layers className="w-5 h-5" />
               </div>
               <h3 className="text-base font-bold text-slate-900 flex items-center gap-1.5">
-                <span>Security &amp; Privacy</span>
-                <ArrowRight className="w-4 h-4 text-purple-600 group-hover:translate-x-1 transition-transform" />
+                <span>Tri-View Simulator</span>
+                <ArrowRight className="w-4 h-4 text-indigo-600 group-hover:translate-x-1 transition-transform" />
               </h3>
               <p className="text-xs text-slate-600 mt-2 leading-relaxed">
-                Role-based access security, authenticated clinician credentials, and patient privacy protection.
+                Live synchronized multi-panel simulation demonstrating patient kiosk check-in, physician summoning, and lobby display.
               </p>
             </div>
           </div>
